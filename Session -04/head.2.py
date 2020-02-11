@@ -4,7 +4,8 @@ from pathlib import Path
 FILENAME = "RNU6_269P.txt"
 
 # -- Open and read the file
-f = Path(FILENAME).read_text()
+file = Path(FILENAME).read_text()
+f= file.split('\n')
 
 # -- Print the contents on the console
-print("First line of the RNU6_269P.txt file:", next(f))
+print("First line of the RNU6_269P.txt file:", f[0])

@@ -4,7 +4,9 @@ from pathlib import Path
 FILENAME = "U5.txt"
 
 # -- Open and read the file
-f = Path(FILENAME).read_text()
+file = Path(FILENAME).read_text()
+f= file.split('\n')
+cadena= ''.join(f[1::])
 
 # -- Print the contents on the console
-print("First line of the U5.txt file:", (f))
+print("The body of the U5.txt file:", cadena)
