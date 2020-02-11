@@ -5,8 +5,7 @@ with open ("dna", "r") as f:
             letterc = "C"
             lettert = "T"
             letterG = "G"
-print("Total length:", len(user_input))
-print("A:", user_input.count(letterA))
-print("C:", user_input.count(letterc))
-print("T:", user_input.count(lettert))
-print("G:", user_input(letterG))
+print("A:", f.count(letterA))
+print("C:", f.count(letterc))
+print("T:", f.count(lettert))
+print("G:", f.count(letterG))
