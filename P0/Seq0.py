@@ -19,3 +19,16 @@ def seq_len(seq):
 #ex4
 def seq_count_base(seq, base):
     return seq.count(base)
+
+#ex5
+def  seq_count(seq):
+    bases = ["A", "C", "T", "G"]
+    n_bases = []
+    for base in bases:
+        n_bases.append(seq_count_base(seq, base))
+    dictionary = dict(zip(bases, n_bases))
+    return dictionary
+
+#ex6
+def seq_reverse(seq):
+    return seq[::-1]
