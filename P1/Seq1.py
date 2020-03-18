@@ -43,6 +43,20 @@ class Seq:
             count_b.append(self.count_bases(base))
         dictionary = dict(zip(bases, count_b))
         return dictionary
+
+    def reverse(self):
+        rev_seq = ''
+        if self.strbases == 'NULL':
+            return self.strbases
+        else:
+            for e in self.strbases[::-1]:
+                if e not in ["A", "C", "T", "G"]:
+                    rev_seq = 'ERROR'
+                    return rev_seq
+
+                else:
+                    rev_seq += e
+        return (rev_seq)
 class Gene(Seq):
     pass
 #main program
