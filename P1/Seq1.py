@@ -17,6 +17,9 @@ class Seq:
         return self.strbases
 
     def len(self):
+        for e in self.strbases:
+            if e not in ["A", "C", "T", "G"]:
+                return 0
         return len(self.strbases)
     """pass #there is nothing inside this class"""
 
