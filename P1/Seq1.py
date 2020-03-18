@@ -23,6 +23,18 @@ class Seq:
         return len(self.strbases)
     """pass #there is nothing inside this class"""
 
+    def count_bases(self, base):
+        counter = 0
+        if self.strbases == '':
+            return 0
+        else:
+            for e in self.strbases:
+                if e not in ["A", "C", "T", "G"]:
+                    return 0
+                else:
+                    if e in base:
+                        counter += 1
+            return counter
 class Gene(Seq):
     pass
 #main program
