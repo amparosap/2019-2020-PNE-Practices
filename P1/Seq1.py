@@ -36,7 +36,7 @@ class Seq:
                         counter += 1
             return counter
 
-    def countdic(self):
+    def count(self):
         bases = ["A", "C", "T", "G"]
         count_b = []
         for base in bases:
