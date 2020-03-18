@@ -57,6 +57,26 @@ class Seq:
                 else:
                     rev_seq += e
         return (rev_seq)
+
+    def complement(self):
+        comp_seq = ""
+        if self.strbases == 'NULL':
+            return self.strbases
+        else:
+            for x in self.strbases:
+                if x not in ["A", "C", "T", "G"]:
+                    comp_seq = 'ERROR'
+                    return comp_seq
+                else:
+                    if x in "A":
+                        comp_seq += "T"
+                    if x in "T":
+                        comp_seq += "A"
+                    if x in "C":
+                        comp_seq += "G"
+                    if x in "G":
+                        comp_seq += "C"
+            return (comp_seq)
 class Gene(Seq):
     pass
 #main program
