@@ -35,6 +35,14 @@ class Seq:
                     if e in base:
                         counter += 1
             return counter
+
+    def countdic(self):
+        bases = ["A", "C", "T", "G"]
+        count_b = []
+        for base in bases:
+            count_b.append(self.count_bases(base))
+        dictionary = dict(zip(bases, count_b))
+        return dictionary
 class Gene(Seq):
     pass
 #main program
