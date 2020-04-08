@@ -77,6 +77,13 @@ class Seq:
                     if x in "G":
                         comp_seq += "C"
             return (comp_seq)
+
+    def read_fasta(self, filename):
+        file_lines = pathlib.Path(filename).read_text().split("\n")
+        body = (file_lines[1:])
+        self.strbases = ''.join(body)
+        return (self)
+
 class Gene(Seq):
     pass
 #main program
