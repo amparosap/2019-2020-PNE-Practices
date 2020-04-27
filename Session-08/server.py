@@ -3,7 +3,7 @@ import termcolor
 
 # Configure the Server's IP and PORT
 PORT = 8080
-IP = "212.128.253.129"
+IP = "192.168.1.39."   # myip
 MAX_OPEN_REQUESTS = 5
 
 # Counting the number of connections
