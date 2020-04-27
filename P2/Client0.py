@@ -20,7 +20,7 @@ class Client:
         s.connect((self.ip, self.port))
         # Send data.
         s.send(str.encode(msg))
-        # Receive data
+        # Receive dataE
         response += s.recv(2048).decode("utf-8")
         s.close()
         return (response)
