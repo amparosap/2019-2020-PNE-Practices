@@ -1,98 +1,67 @@
+from pathlib import Path
+
 class Seq:
     """A class for representing sequence objects"""
-    def __init__(self, strbases):
-        if strbases== "":
-            print("NULL Seq created!")
-            self.strbases = "NULL"
-        else:
-            for e in strbases:
-                if e not in ["A", "C", "T", "G"]:
-                    print("INVALID seq")
-                    self.strbases = "ERROR"
-                    return
-            print("New sequence created!")
-            self.strbases = strbases
+    Error = "ERROR!"
+    Null = "NULL!"
+    def __init__(self, strbases = Null):
 
-    def __str__(self):
+        if strbases == self.Null:
+            self.strbases = self.Null
+            print("Null Seq created")
+            return
+
+        if not self.valid_seq(strbases):
+            self.strbases = self.Error
+            print("Invalid Seq!")
+            return
+
+        self.strbases = strbases
+        print("New Seq created!")
+
+    def valid_seq(self, strbases):
+        bases = ["A", "C", "G", "T"]
+        for b in strbases:
+            if b not in bases:
+                return False
+        return True
+
+    def __str__(self):       # Everytime we want to print an object
         return self.strbases
 
     def len(self):
-        for e in self.strbases:
-            if e not in ["A", "C", "T", "G"]:
-                return 0
-        return len(self.strbases)
-    """pass #there is nothing inside this class"""
-
-    def count_bases(self, base):
-        counter = 0
-        if self.strbases == '':
+        if self.strbases == self.Error or self.strbases == self.Null:
             return 0
         else:
-            for e in self.strbases:
-                if e not in ["A", "C", "T", "G"]:
-                    return 0
-                else:
-                    if e in base:
-                        counter += 1
-            return counter
+            return len(self.strbases)
+
+    def count_base(self, base):
+        return self.strbases.count(base)
 
     def count(self):
-        bases = ["A", "C", "T", "G"]
-        count_b = []
-        for base in bases:
-            count_b.append(self.count_bases(base))
-        dictionary = dict(zip(bases, count_b))
-        return dictionary
+        res = {"A": self.count_base("A"), "C": self.count_base("C"),
+               "G": self.count_base("G"), "T": self.count_base("T")}
+        return res
 
     def reverse(self):
-        rev_seq = ''
-        if self.strbases == 'NULL':
+        if self.strbases == self.Error or self.strbases == self.Null:
             return self.strbases
         else:
-            for e in self.strbases[::-1]:
-                if e not in ["A", "C", "T", "G"]:
-                    rev_seq = 'ERROR'
-                    return rev_seq
-
-                else:
-                    rev_seq += e
-        return (rev_seq)
+            return self.strbases[::-1]
 
     def complement(self):
-        comp_seq = ""
-        if self.strbases == 'NULL':
+        dict_bases = {"A": "T", "T": "A", "C": "G", "G": "C"}
+        res = ''
+        if self.strbases == self.Error or self.strbases == self.Null:
             return self.strbases
         else:
-            for x in self.strbases:
-                if x not in ["A", "C", "T", "G"]:
-                    comp_seq = 'ERROR'
-                    return comp_seq
-                else:
-                    if x in "A":
-                        comp_seq += "T"
-                    if x in "T":
-                        comp_seq += "A"
-                    if x in "C":
-                        comp_seq += "G"
-                    if x in "G":
-                        comp_seq += "C"
-            return (comp_seq)
+            for b in self.strbases:
+                res = res + dict_bases[b]
+            return res
 
     def read_fasta(self, filename):
-        file_lines = pathlib.Path(filename).read_text().split("\n")
-        body = (file_lines[1:])
-        self.strbases = ''.join(body)
-        return (self)
-
-class Gene(Seq):
-    pass
-#main program
-s1= Seq("AACGTC")
-g= Gene("CCGTCGA")
-
-#print(f"sequence 1: {s1}")
-#print(f"sequence 2: {g}")
-
-l1= s1.len()
-#print(f"the lenght of the sequence 1 is {l1}")
-#print(f"the length of the sequence 2 is {g.len()}")
+        file = Path(filename)
+        file_contents = file.read_text()
+        lines = file_contents.split('\n')
+        self.strbases = "".join(lines[1:])
+        return self
