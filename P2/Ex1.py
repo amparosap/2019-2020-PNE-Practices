@@ -14,3 +14,5 @@ c = Client(IP, PORT)
 c.ping()
 
 print(f"IP: {c.ip}, {c.port}")
+
+c.talk('testing')

@@ -23,9 +23,17 @@ print(f"Gene FRAT1: {str(seq)}")
 
 length = 10
 
-c.talk(f"Sending FRAT1 gene to the server in fragments of {length} bases...")
+mes = f"Sending FRAT1 gene to the server in fragments of {length} bases..."
+c1.talk(mes)
+c2.talk(mes)
+
+print(f"Gene FRAT1: {str(seq)}")
 
 for i in range(10):
-    frag = str(seq)[i * length: (i + 1) * length] #para q empiece desde el 1, 11,21....
-    print(f"Fragment {i+1}: {frag}")
-    c.talk(f"Fragment {i+1}: {frag}")
+    frag = str(seq)[i * length: (i + 1) * length]
+    print(f"Fragment {i + 1}: {frag}")
+    m = f"Fragment {i + 1}: {frag}"
+    if i % 2:
+        c2.talk(m)
+    else:
+        c1.talk(m)
