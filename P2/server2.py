@@ -3,7 +3,7 @@ import termcolor
 
 
 # Configure the Server's IP and PORT
-PORT = 8080
+PORT = 8081
 IP = "192.168.1.39"
 MAX_OPEN_REQUESTS = 50
 
@@ -50,3 +50,4 @@ except socket.error:
 
 except KeyboardInterrupt:
     print("Server stopped by the user")
+    serversocket.close()
