@@ -14,6 +14,15 @@ socketserver.TCPServer.allow_reuse_address = True
 FOLDER = "../Session-04/"
 EXT = ".txt"
 bases = ["A", "C", "T", "G"]
+# -- Sequences for the GET command
+SEQ_GET = [
+    "ACCTCCTCTCCAGCAATGCCAACCCCAGTCCAGGCCCCCATCCGCCCAGGATCTCGATCA",
+    "AAAAACATTAATCTGTGGCCTTTCTTTGCCATTTCCAACTCTGCCACCTCCATCGAACGA",
+    "CAAGGTCCCCTTCTTCCTTTCCATTCCCGTCAGCTTCATTTCCCTAATCTCCGTACAAAT",
+    "CCCTAGCCTGACTCCCTTTCCTTTCCATCCTCACCAGACGCCCGCATGCCGGACCTCAAA",
+    "AGCGCAAACGCTAAAAACCGGTTGAGTTGACGCACGGAGAGAAGGGGTGTGTGGGTGGGT",
+]
+
 
 # Class with our Handler. It is a called derived from BaseHTTPRequestHandler
 # It means that our class inheritates all his methods and properties
@@ -33,29 +42,55 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
         contents = Path('Error.html').read_text()
         self.send_response(404)
         if first_arg == "/":
-            contents = Path('form-1.html').read_text()
-            #contents += Path('form-2.html').read_text()
+            contents = Path('form-2.html').read_text()
             #contents += Path('form-3.html').read_text()
             #contents += Path('form-4.html').read_text()
             self.send_response(200)
-        else:
-            second_arg = args[1]
-            seq_args = second_arg.split("=")   #Utilizar seq_args[-1] para operations como la operacion
-            if req_line[1] == "/ping?":
-                contents = """
+
+        elif first_arg == "/ping":
+            contents = """
+            <!DOCTYPE html>
+            <html lang="en">
+            <head>
+                <meta charset="utf-8">
+                <title>RESULT</title>
+            </head>
+            <body>
+            <h2>PING OK!</h2>
+            <p>The SEQ2 server is running! </p>
+            """
+            contents += '<a href="/">Main Page</a>'
+            contents += "</body></html>"
+            self.send_response(200)
+
+        elif  first_arg == "/get":
+            # -- Get the argument to the right of the ? symbol
+            pair = args[1]
+            # -- Get all the pairs name = value
+            pairs = pair.split('&')
+            # -- Get the two elements: name and value
+            name, value = pairs[0].split("=")
+            n = int(value)
+
+            # -- Get the sequence
+            seq = SEQ_GET[n]
+
+            # -- Generate the html code
+            contents = f"""
                 <!DOCTYPE html>
-                <html lang="en">
+                <html lang = "en">
                 <head>
-                    <meta charset="utf-8">
-                    <title>RESULT</title>
-                </head>
+                <meta charset = "utf-8" >
+                  <title> GET </title >
+                </head >
                 <body>
-                <h2>PING OK!</h2>
-                <p>The SEQ2 server is running! </p>
+                <h2> Sequence number {n}</h2>
+                <p> {seq} </p>
+                <a href="/">Main page</a>
+                </body>
+                </html>
                 """
-                contents += '<a href="/">Main Page</a>'
-                contents += "</body></html>"
-                self.send_response(200)
+            self.send_response(200)
 
 
         # Open the form1.html file
