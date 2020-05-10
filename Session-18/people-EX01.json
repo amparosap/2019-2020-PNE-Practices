@@ -1,0 +1,31 @@
+[
+  {
+    "Firstname": "Troll",
+    "Lastname": "Face",
+    "age": 20,
+    "phoneNumber": [
+      {"number": "1111", "type": "home"},
+      {"number": "333", "type" : "office"}
+      ]
+    },
+
+    {
+    "Firstname": "Rib",
+    "Lastname": "Guy",
+    "age": 20,
+    "phoneNumber": [
+      {"number": "56789", "type": "home"}
+      ]
+    },
+
+     {
+    "Firstname": "Mar",
+    "Lastname": "Obi",
+    "age": 12,
+    "phoneNumber": [
+      {"number": "12345", "type": "home"},
+      {"number": "23456", "type" : "mobile"},
+      {"number": "867890", "type" : "office"}
+    ]
+    }
+  ]
