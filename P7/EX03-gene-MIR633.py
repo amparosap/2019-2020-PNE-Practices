@@ -20,8 +20,10 @@ SERVER = 'rest.ensembl.org'
 ENDPOINT = '/sequence/id/'
 PARAMS = '?content-type=application/json' #parameters
 GENENAME = 'MIR633'
-IDENTIFIER = "ENSG00000207552"
 URL = SERVER + ENDPOINT + GENES[GENENAME] + PARAMS
+REQ = ENDPOINT + GENES[GENENAME] + PARAMS
+
+
 
 
 print()
@@ -31,7 +33,7 @@ print(f"URL: {URL}")
 conn = http.client.HTTPConnection(SERVER)
 
 try:
-    conn.request("GET", ENDPOINT + PARAMS)
+    conn.request("GET", REQ)
 
 except ConnectionRefusedError:
     print("ERROR!!! We weren't able to conncet to the server :(")
