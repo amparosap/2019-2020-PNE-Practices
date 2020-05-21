@@ -128,7 +128,7 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
 
                     for subregion in top_region:
                         if subregion['name']==chromo:
-                            lenght = item["lenght"]
+                            lenght = subregion["lenght"]
                             print("The lenght is ", lenght)
 
                     contents= """<html><body>"""+str(lenght)+"""</html></body>"""
@@ -149,7 +149,7 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
         self.send_header("Content-Length", len(str.encode(contents))) #length of the doc
         self.end_headers()
         # we encode our content for later printing it in the browser
-        self.wfile.write(str.encode(contents)
+        self.wfile.write(str.encode(contents))
 
 
 
