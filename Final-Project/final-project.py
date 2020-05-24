@@ -2,6 +2,7 @@ import http.server
 from pathlib import Path
 import socketserver
 import termcolor
+from Seq1 import Seq
 import json
 
 
@@ -30,10 +31,10 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
             contents = Path('listofspecies.html').read_text()
             contents += Path('karyotype.html').read_text()
             contents += Path('chromosomel lenght.html').read_text()
-            #contents += Path('seq_humangen.html').read_text()
-            #contents += Path('infogene.html').read_text()
-            #contents += Path('genecalculations.html').read_text()
-            #contents += Path('genelist.html').read_text()
+            contents += Path('seq_humangen.html').read_text()
+            contents += Path('infogene.html').read_text()
+            contents += Path('genecalculations.html').read_text()
+            contents += Path('genelist.html').read_text()
             self.send_response(200)
 
         # now analyze the endpoints
@@ -114,108 +115,354 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
 
             # check if the user has asked for information about the karyotype
             elif '/karyotype' in first_arg:
-                action = args[1].split("=")[0]
-                specie = args[1].split('=')[1]
-                endpoint = "/info/assembly/"
                 try:
-                    conn.request("GET", endpoint + specie + parameters)
+                    self.send_response(200)
+                    specie = args[1].split('=')[1]
+                    endpoint = "/info/assembly/"
+                    try:
+                        conn.request("GET", endpoint + specie + parameters)
+                    except ConnectionRefusedError:
+                        print("ERROR! Cannot connect to the Server")
+                        exit()
+                    r0 = conn.getresponse()
+                    data0 = r0.read().decode("utf-8")
+                    resp = json.loads(data0)  # dictionary
+                    for kar,chromos in resp.items():
+                        if kar == "karyotype" :
+                            contents = f"""
+                                    <!DOCTYPE html>
+                                    <html lang="en">
+                                    <head>
+                                        <meta charset="utf-8">
+                                        <title>KARYOTYPE</title>
+                                    </head>
+                                    <body style="background-color: #D4E6F1;">
+                                    """
+                            contents += f"<h2> Information about the karyotype of a specie</h2>"
+                            contents += f"""<p>The names of the chromosomes are: </p>"""
+                            for chromo in chromos:
+                                if chromo == "MT":     # the chromosome MT is not valid
+                                    pass
+                                else:
+                                    contents += f"""<p> - {chromo} </p>"""
+                            contents += f"""<a href="/">Main page</a></body></html>"""
+                except KeyError:
+                    contents = f"""<!DOCTYPE html>
+                                <html lang = "en">
+                                <head>
+                                    <meta charset = "utf-8">
+                                    <title>ERROR</title>
+                                </head>
+                                <body style="background-color: red;">
+                                <h1>ERROR!</h1>
+                                <p>Not a valid, please try again</p>"""
+                    contents += '<a href="/">Main page</a></body></html>'
+                    self.send_response(404)
+
+            # information about the length of a chromosome of a given specie
+            elif '/chromosomeLength' in first_arg:
+                # we extract the specie and the chromosome from the request line
+                specie = args[1].split("&")[0].split("=")[1]
+                chromo = args[1].split("&")[1].split("=")[1]
+                endpoint = "/info/assembly/"
+                endpoint += f"{specie}/{chromo}"
+                try:
+                    conn.request("GET", endpoint + parameters)
                 except ConnectionRefusedError:
                     print("ERROR! Cannot connect to the Server")
                     exit()
                 r0 = conn.getresponse()
                 data0 = r0.read().decode("utf-8")
-                resp = json.loads(data0)
-                chromo_list= resp['karyotype'] #list of all the genes of the 'specie'
-                try:
-                    if action == "karyotype" :
-                        # In case the entered species has no karotype info in ensembl:
-                        if str(specie) == "[]":
-                            contents = f"""<!DOCTYPE html>
-                                            <html lang="en" dir="ltr">
-                                            <head>
-                                            <meta charset="utf-8">
-                                            <title>Error</title>
-                                            </head>
-                                            <body style="background-color: red;">
-                                            <h1>Error</h1>
-                                            <p>Resource not available</p>
-                                            <p> The karyotype of this species is not available. </p>
-                                            </p>"""
-                        else:
-                            contents= """
-                                        <!DOCTYPE html>
-                                        <html lang="en">
-                                        <head>
-                                            <meta charset="utf-8">
-                                            <title>KARYOTYPE</title>
-                                        </head>
-                                        <body style="background-color: #D4E6F1;">
-                                        """
-                            contents += f"<h2> Information about the karyotype of a specie</h2>"
-                            contents += f"""<p>The names of the chromosomes are: </p>"""
-                            for chromo in chromo_list:
-                                contents += f"""<p> - {chromo} </p>"""
+                resp = json.loads(data0)  # dictionary
+                contents = f"""<!DOCTYPE html>
+                                <html lang = "en">
+                                <head>
+                                <meta charset = "utf-8">
+                                <title> LENGTH OF THE CHROMOSOME SELECTED </title >
+                                </head >
+                                <body style="background-color: #D4E6F1;">
+                                """
+                contents += f"""<p>The selection is the chromosome {chromo} of the '{specie}</p>"""
+                length = None
 
-                            contents += f"""<a href="/">Main page</a></body></html>"""
-                    elif f"{r0.status} {r0.reason}" == "400 Bad Request":
-                        contents = f"""<!DOCTYPE html>
-                                        <html lang="en" dir="ltr">
-                                        <head>
-                                        <meta charset="utf-8">
-                                        <title>Error</title>
-                                        </head>
-                                        <body style="background-color: red;"><body>
-                                        <h1>Error</h1>
-                                        <p>Resource not available</p>
-                                        <p> This species is not available in ensembl or does not exist.</p>. 
-                                        """
-                    else:
-                        self.send_response(404)
-                        contents = Path("Error.html").read_text()
-                except ValueError:
+                for key, value in resp.items():
+                    if key == "length":
+                        length = value
+                if length != None:
+                    contents += f"""<h3>The length of the chromosome is:</h3><p>{length}</p>"""
+                else:
                     contents = f"""<!DOCTYPE html>
                                     <html lang = "en">
                                     <head>
-                                     <meta charset = "utf-8" >
-                                     <title>ERROR: invalid valur</title >
+                                        <meta charset = "utf-8">
+                                        <title>ERROR</title>
                                     </head>
-                                    <body>
-                                    <p>ERROR INVALID VALUE</p>
-                                    <a href="/">Main page</a></body></html>"""
+                                    <body style="background-color: red;">
+                                    <h1>ERROR!</h1>
+                                    <p>Not a valid chromosome, please try again</p>"""
+                contents += f"""<a href="/">Main page</a></body></html>"""
 
-            # information about the length of a chromosome of a given specie
-            elif 'chromosomeLength' in first_arg:
-                # we extract the specie and the chromosome from the request line
-                variables = req_line.partition('&')[1]
-                chromo = variables.split('=')[1]
-                if len(req_line.partition('='))>1:
-                    specie = req_line.partition('=')[1].split('&')[0]
-                    chromo=req_line('=')[2]
-
-                    print('The selection is the chromosome ' + chromo + ' of the ' + specie )
-
-                    endpoint = "/info/assembly/"
-                    conn.request("GET", endpoint + specie + parameters)
-                    r0 = conn.getresponse()
-                    data0 = r0.read().decode("utf-8")
-                    resp = json.loads(data0)
-
-                    top_region = resp['top_level_region']
-                    lenght=0
-
-                    for subregion in top_region:
-                        if subregion['name']==chromo:
-                            lenght = subregion["lenght"]
-                            print("The lenght is ", lenght)
-
-                    contents= """<html><body>"""+str(lenght)+"""</html></body>"""
-                else:
+            #--------------MEDIUM LEVEL--------------------------
+            elif "/geneSeq" in first_arg:
+                try:
+                    self.send_response(200)
+                    contents = f"""<!DOCTYPE html>
+                                <html lang = "en">
+                                <head>
+                                <meta charset = "utf-8">
+                                <title> GENE  </title >
+                                </head >
+                                <body style="background-color: #D4E6F1;">
+                                """
+                    gene = args[1].split("=")[1]
+                    endpoint1 = f"/xrefs/symbol/homo_sapiens/{gene}"   # returns info about that gene(ID)
+                    try:
+                        conn.request("GET", endpoint1 + parameters)
+                    except ConnectionRefusedError:
+                        print("ERROR! Cannot connect to the Server")
+                        exit()
+                    gene = args[1].split("=")[1]
+                    endpoint1 = f"/xrefs/symbol/homo_sapiens/{gene}"  # returns info about that gene(stable ID):
+                    r1 = conn.getresponse()
+                    data1 = r1.read().decode("utf-8")
+                    resp1 = json.loads(data1)  # for the id
+                    id = resp1 [0]["id"]
+                    endpoint2 = f"sequence/id/{id}" #This one takes a stable ID and returns the complete sequence of that gene.
+                    try:
+                        conn.request("GET", endpoint2 + parameters)
+                    except ConnectionRefusedError:
+                        print("ERROR! Cannot connect to the Server")
+                        exit()
+                    r2 = conn.getresponse()
+                    data2 = r2.read().decode("utf-8")
+                    resp2 = json.loads(data2)  # for the seq
+                    seq = resp2["seq"] #full sequence
+                    contents += f"""<p> The sequence of {gene} is: {seq} </p>"""
+                    contents += f"""<a href="/">Main page</a></body></html>"""
+                except IndexError:
+                    contents = f"""<!DOCTYPE html>
+                                    <html lang = "en">
+                                    <head>
+                                        <meta charset = "utf-8">
+                                        <title>ERROR</title>
+                                    </head>
+                                    <body style="background-color: red;">
+                                    <h1>ERROR!</h1>
+                                    <p>Not a valid gene, please try again</p>"""
+                    contents += '<a href="/">Main page</a></body></html>'
                     self.send_response(404)
-                    contents = Path("Error.html").read_text()
+                except KeyError:
+                    contents = f"""<!DOCTYPE html>
+                                    <html lang = "en">
+                                    <head>
+                                        <meta charset = "utf-8">
+                                        <title>ERROR</title>
+                                    </head>
+                                    <body style="background-color: red;">
+                                    <h1>ERROR!</h1>
+                                    <p>Not a valid gene, please try again</p>"""
+                    contents += '<a href="/">Main page</a></body></html>'
+                    self.send_response(404)
 
-            else:
-                self.send_response(200)
-                contents= Path("Error.html").read_text()
+            #Return information about a human gene: start, end, Length, id and Chromose
+            elif "/geneInfo" in first_arg:
+                try:
+                    self.send_response(200)
+                    contents = f"""<!DOCTYPE html>
+                                    <html lang = "en">
+                                    <head>
+                                    <meta charset = "utf-8">
+                                    <title> Information about a human gene </title >
+                                    </head >
+                                    <body style="background-color: #D4E6F1;">
+                                    """
+                    gene = args[1].split("=")[1]
+                    endpoint1 = f"/xrefs/symbol/homo_sapiens/{gene}"  # returns info about that gene(ID)
+                    try:
+                        conn.request("GET", endpoint1 + parameters)
+                    except ConnectionRefusedError:
+                        print("ERROR! Cannot connect to the Server")
+                        exit()
+                    r1 = conn.getresponse()
+                    data1 = r1.read().decode("utf-8")
+                    resp1 = json.loads(data1)  # for the id
+                    id = resp1[0]["id"]
+                    endpoint2 = f"lookup/id/{id}"  # This one takes a stable ID and returns the complete sequence of that gene.
+                    try:
+                        conn.request("GET", endpoint2 + parameters)
+                    except ConnectionRefusedError:
+                        print("ERROR! Cannot connect to the Server")
+                        exit()
+                    r2 = conn.getresponse()
+                    data2 = r2.read().decode("utf-8")
+                    resp2 = json.loads(data2)  # for the seq
+                    # now we obtain the necessary information
+                    # seq = resp2["seq"]  # full sequence
+                    start = resp2["start"]
+                    end = resp2["end"]
+                    length = str(int(end) - int(start))
+                    id2 = resp2["id"]
+                    chromo = resp2["seq_region_name"]
+                    contents += f'<h1> Information about the selected gene ( {gene} ): </h1>'
+                    contents += f'<p> 1. The start point is: {start}</p>'
+                    contents += f'<p> 2. The end point is: {end}</p>'
+                    contents += f'<p> 3. The length of the gene is: {length}</p>'
+                    contents += f'<p> 4. The Id of the gene is: {id2}</p>'
+                    contents += f'<p> 5. The chromosome were is located this gene is: {chromo}</p>'
+                    contents += '<a href="/">Main page</a></body></html>'
+                except IndexError:
+                    contents = f"""<!DOCTYPE html>
+                                    <html lang = "en">
+                                    <head>
+                                        <meta charset = "utf-8">
+                                        <title>ERROR</title>
+                                    </head>
+                                    <body style="background-color: red;">
+                                    <h1>ERROR!</h1>
+                                    <p>Not a valid gene, please try again</p>"""
+                    contents += '<a href="/">Main page</a></body></html>'
+                    self.send_response(404)
+                except KeyError:
+                    contents = f"""<!DOCTYPE html>
+                                    <html lang = "en">
+                                    <head>
+                                        <meta charset = "utf-8">
+                                        <title>ERROR</title>
+                                    </head>
+                                    <body style="background-color: red;">
+                                    <h1>ERROR!</h1>
+                                    <p>Not a valid gene, please try again</p>"""
+                    contents += '<a href="/">Main page</a></body></html>'
+                    self.send_response(404)
+            #calculations on the given human gene and returns the total length and the percentage of all its bases
+            elif '/geneCalc' in first_arg:
+                try:
+                    self.send_response(200)
+                    contents = f"""<!DOCTYPE html>
+                                    <html lang = "en">
+                                    <head>
+                                    <meta charset = "utf-8">
+                                    <title> Calculations on the given human gene </title >
+                                    </head >
+                                    <body style="background-color: #D4E6F1;">
+                                    """
+                    gene = args[1].split("=")[1]
+                    endpoint1 = f"/xrefs/symbol/homo_sapiens/{gene}"  # returns info about that gene(ID)
+                    try:
+                        conn.request("GET", endpoint1 + parameters)
+                    except ConnectionRefusedError:
+                        print("ERROR! Cannot connect to the Server")
+                        exit()
+                    r1 = conn.getresponse()
+                    data1 = r1.read().decode("utf-8")
+                    resp1 = json.loads(data1)  # for the id
+                    id = resp1[0]["id"]
+                    endpoint2 = f"sequence/id/{id}"  # This one takes a stable ID and returns the complete sequence of that gene.
+                    try:
+                        conn.request("GET", endpoint2 + parameters)
+                    except ConnectionRefusedError:
+                        print("ERROR! Cannot connect to the Server")
+                        exit()
+                    r2 = conn.getresponse()
+                    data2 = r2.read().decode("utf-8")
+                    resp2 = json.loads(data2)  # for the seq
+                    seq = Seq(resp2["seq"]) # Seq for perform operations
+                    lenght = seq.len()
+                    contents += f"<h2>Here the calculations of the gene: {gene} :</h2>"
+                    contents += f"<p>The total length of the sequence is: {lenght}</p>"
+                    basis_dict = seq.count() #count crea dict
+                    for key, value in basis_dict.items():
+                        contents += f"<p>{key}: {round((value /lenght) * 100, 2)}</p>"
+                    contents += '<a href="/">Main page</a></body></html>'
+                except IndexError:
+                    contents = f"""<!DOCTYPE html>
+                                    <html lang = "en">
+                                    <head>
+                                        <meta charset = "utf-8">
+                                        <title>ERROR</title>
+                                    </head>
+                                    <body style="background-color: red;">
+                                    <h1>ERROR!</h1>
+                                    <p>Not a valid gene, please try again</p>"""
+                    contents += '<a href="/">Main page</a></body></html>'
+                    self.send_response(404)
+                except KeyError:
+                    contents = f"""<!DOCTYPE html>
+                                    <html lang = "en">
+                                    <head>
+                                        <meta charset = "utf-8">
+                                        <title>ERROR</title>
+                                    </head>
+                                    <body style="background-color: red;">
+                                    <h1>ERROR!</h1>
+                                    <p>Not a valid gene, please try again</p>"""
+                    contents += '<a href="/">Main page</a></body></html>'
+                    self.send_response(404)
+            # names of the genes located in the chromosome "chromo" from the start to end positions
+            elif '/geneList' in first_arg:
+                try:
+                    self.send_response(200)
+                    contents = f"""<!DOCTYPE html>
+                                    <html lang = "en">
+                                    <head>
+                                        <meta charset = "utf-8">
+                                        <title>GENE LIST</title>
+                                    </head>
+                                    <body style="background-color: #D4E6F1;">
+                                    <h1>Names of the genes located in the chromosome</h1>"""
+
+                    endpoint = "overlap/region/human/"
+                    chromosome = args[1].split("&")[0].split("=")[1]
+                    start = args[1].split("&")[1].split("=")[1]
+                    end = args[1].split("&")[2].split("=")[1]
+
+                    contents += f"<p>The selected chromosome: {chromosome}</p>"
+                    contents += f"<p>The start: {start}</p>"
+                    contents += f"<p>The end: {end}</p>"
+
+                    endpoint += f"{chromosome}:{start}-{end}"
+                    parameter2 = "?feature=gene;content-type=application/json"
+
+                    try:
+                        conn.request("GET", endpoint + parameter2)
+
+                    except ConnectionRefusedError:
+                        termcolor.cprint("ERROR! It was not possible to connect to the server.")
+                        exit()
+                    r = conn.getresponse()
+                    data = r.read().decode("utf-8")
+                    resp = json.loads(data)  # dictionary
+                    contents += f"<h3>List:</h3>"
+                    if len(resp) != 0:
+                        for gene in resp:
+                            contents += f"""<p> - {gene["external_name"]} </p>"""
+                    else:
+                        self.send_response(404)
+                        contents = \
+                            f"""<!DOCTYPE html>
+                                        <html lang = "en">
+                                        <head>
+                                            <meta charset = "utf-8">
+                                            <title>REGION ERROR</title>
+                                        </head>
+                                        <body style="background-color: red;">
+                                        <h1>ERROR!</h1>
+                                        <p>Try again</p>"""
+                    contents += '<a href="/">Main page</a></body></html>'
+                except TypeError:
+                    self.send_response(404)
+                    f"""<!DOCTYPE html>
+                       <html lang = "en">
+                       <head>
+                           <meta charset = "utf-8">
+                           <title>ERROR</title>
+                       </head>
+                       <body style="background-color: red;">
+                       <h1>Type ERROR!</h1>
+                       <p>Is not a valid selection, please try again</p>"""
+                contents += '<a href="/">Main page</a></body></html>'
+
+
 
         # Generating response
         self.send_header("Content-Type", "text/html")
@@ -223,8 +470,6 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
         self.end_headers()
         # we encode our content for later printing it in the browser
         self.wfile.write(str.encode(contents))
-
-
 
 # ------------- MAIN PROGRAM ----------------
 # -- Set the new handler
