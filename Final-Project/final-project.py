@@ -8,7 +8,7 @@ import json
 
 PORT = 8080
 server = "rest.ensembl.org"
-parameters= '?content-type=application/json'
+parameters = '?content-type=application/json'
 conn = http.client.HTTPConnection(server)
 
 # -- This is for preventing the error: "Port already in use"
@@ -27,7 +27,7 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
         self.send_response(404)
 
         # if the user only enters following endpoints, program must open the home menu
-        if first_arg == "/" :
+        if first_arg == "/":
             contents = Path('listofspecies.html').read_text()
             contents += Path('karyotype.html').read_text()
             contents += Path('chromosomel lenght.html').read_text()
@@ -41,11 +41,11 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
         else:
             # endpoint given if the user has requested some information about the species
             if "/listSpecies" in first_arg:
-                # List Species: List the names of all the species available in the database. The limit parameter (optional)
-                # indicates the maximum number of species to show. If it is not specified, all the species will be listed
+                # List the names of all the species available in the database.
+                # The limit indicates the maximum number of species to show. (optional)
+                # If the limit is not specified, all the species will be listed
                 # this is the endpoint for retrieving species information from the API
-                endpoint = '/info/species'  #all available data of species.
-
+                endpoint = '/info/species'  # all available data of species.
                 try:
                     conn.request("GET",  endpoint + parameters)
                 except ConnectionRefusedError:
@@ -70,7 +70,7 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
                                                 <title>ERROR: out of range</title >
                                             </head>
                                             <body style="background-color: red;">
-                                            <h3>The limit you have introduced is out of range. Please, introduce a valid limit value</h3>
+                                            <h3>The limit you have introduced is out of range. Please, try again</h3>
                                             <a href="/">Main page</a>
                                             </body></html>"""
                         else:
@@ -127,8 +127,8 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
                     r0 = conn.getresponse()
                     data0 = r0.read().decode("utf-8")
                     resp = json.loads(data0)  # dictionary
-                    for kar,chromos in resp.items():
-                        if kar == "karyotype" :
+                    for kar, chromos in resp.items():
+                        if kar == "karyotype":
                             contents = f"""
                                     <!DOCTYPE html>
                                     <html lang="en">
@@ -188,7 +188,7 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
                 for key, value in resp.items():
                     if key == "length":
                         length = value
-                if length != None:
+                if length is not None:
                     contents += f"""<h3>The length of the chromosome is:</h3><p>{length}</p>"""
                 else:
                     contents = f"""<!DOCTYPE html>
@@ -202,7 +202,7 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
                                     <p>Not a valid chromosome, please try again</p>"""
                 contents += f"""<a href="/">Main page</a></body></html>"""
 
-            #--------------MEDIUM LEVEL--------------------------
+            # --------------MEDIUM LEVEL--------------------------
             elif "/geneSeq" in first_arg:
                 try:
                     self.send_response(200)
@@ -222,12 +222,11 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
                         print("ERROR! Cannot connect to the Server")
                         exit()
                     gene = args[1].split("=")[1]
-                    endpoint1 = f"/xrefs/symbol/homo_sapiens/{gene}"  # returns info about that gene(stable ID):
                     r1 = conn.getresponse()
                     data1 = r1.read().decode("utf-8")
                     resp1 = json.loads(data1)  # for the id
-                    id = resp1 [0]["id"]
-                    endpoint2 = f"sequence/id/{id}" #This one takes a stable ID and returns the complete sequence of that gene.
+                    id = resp1[0]["id"]
+                    endpoint2 = f"sequence/id/{id}"  # Takes an ID and returns the complete sequence of that gene.
                     try:
                         conn.request("GET", endpoint2 + parameters)
                     except ConnectionRefusedError:
@@ -236,7 +235,7 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
                     r2 = conn.getresponse()
                     data2 = r2.read().decode("utf-8")
                     resp2 = json.loads(data2)  # for the seq
-                    seq = resp2["seq"] #full sequence
+                    seq = resp2["seq"]  # full sequence
                     contents += f"""<p> The sequence of {gene} is: {seq} </p>"""
                     contents += f"""<a href="/">Main page</a></body></html>"""
                 except IndexError:
@@ -264,7 +263,7 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
                     contents += '<a href="/">Main page</a></body></html>'
                     self.send_response(404)
 
-            #Return information about a human gene: start, end, Length, id and Chromose
+            # Return information about a human gene: start, end, Length, id and Chromose
             elif "/geneInfo" in first_arg:
                 try:
                     self.send_response(200)
@@ -287,7 +286,7 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
                     data1 = r1.read().decode("utf-8")
                     resp1 = json.loads(data1)  # for the id
                     id = resp1[0]["id"]
-                    endpoint2 = f"lookup/id/{id}"  # This one takes a stable ID and returns the complete sequence of that gene.
+                    endpoint2 = f"lookup/id/{id}"   # Takes an ID and returns the complete sequence of that gene.
                     try:
                         conn.request("GET", endpoint2 + parameters)
                     except ConnectionRefusedError:
@@ -297,7 +296,6 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
                     data2 = r2.read().decode("utf-8")
                     resp2 = json.loads(data2)  # for the seq
                     # now we obtain the necessary information
-                    # seq = resp2["seq"]  # full sequence
                     start = resp2["start"]
                     end = resp2["end"]
                     length = str(int(end) - int(start))
@@ -334,7 +332,7 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
                                     <p>Not a valid gene, please try again</p>"""
                     contents += '<a href="/">Main page</a></body></html>'
                     self.send_response(404)
-            #calculations on the given human gene and returns the total length and the percentage of all its bases
+            # calculations on the given human gene and returns the total length and the percentage of all its bases
             elif '/geneCalc' in first_arg:
                 try:
                     self.send_response(200)
@@ -357,7 +355,7 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
                     data1 = r1.read().decode("utf-8")
                     resp1 = json.loads(data1)  # for the id
                     id = resp1[0]["id"]
-                    endpoint2 = f"sequence/id/{id}"  # This one takes a stable ID and returns the complete sequence of that gene.
+                    endpoint2 = f"sequence/id/{id}"   # Takes an ID and returns the complete sequence of that gene.
                     try:
                         conn.request("GET", endpoint2 + parameters)
                     except ConnectionRefusedError:
@@ -370,7 +368,7 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
                     lenght = seq.len()
                     contents += f"<h2>Here the calculations of the gene: {gene} :</h2>"
                     contents += f"<p>The total length of the sequence is: {lenght}</p>"
-                    basis_dict = seq.count() #count crea dict
+                    basis_dict = seq.count()   # count crea dict
                     for key, value in basis_dict.items():
                         contents += f"<p>{key}: {round((value /lenght) * 100, 2)}</p>"
                     contents += '<a href="/">Main page</a></body></html>'
@@ -462,11 +460,9 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
                        <p>Is not a valid selection, please try again</p>"""
                 contents += '<a href="/">Main page</a></body></html>'
 
-
-
         # Generating response
         self.send_header("Content-Type", "text/html")
-        self.send_header("Content-Length", len(str.encode(contents))) #length of the doc
+        self.send_header("Content-Length", len(str.encode(contents)))  # length of the doc
         self.end_headers()
         # we encode our content for later printing it in the browser
         self.wfile.write(str.encode(contents))
