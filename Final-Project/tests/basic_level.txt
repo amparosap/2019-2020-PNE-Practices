@@ -65,7 +65,7 @@ http://localhost:8080/
 </body>
 </html>
 
----> list of Species
+---> listSpecies ENDPOINT
 
 * TEST 1:
 
@@ -127,7 +127,7 @@ http://localhost:8080/listSpecies?limit=1
 <body style="background-color: #D4E6F1;">
 <h2> Species List</h2><p>The total number of species is: 286</p><p>The number of species you selected are: 1 </p><p>The species are: </p><p> - Mainland tiger snake </p><a href="/">Main page</a></body></html>
 
----> karyotype
+---> karyotype ENDPOINT
 
 * TEST 1:
 
@@ -178,7 +178,7 @@ http://localhost:8080/karyotype?specie=a
 <p>Resource not avaible</p>
 <a href="/">Main page</a></body></html>"""
 
-* TEST 3:
+* TEST 4:
 
 * Input:
 http://localhost:8080/karyotype?specie=pig
@@ -193,7 +193,7 @@ http://localhost:8080/karyotype?specie=pig
 <body style="background-color: #D4E6F1;">
 <h2> Information about the karyotype of a specie</h2><p>The names of the chromosomes are: </p><p> - 1 </p><p> - 2 </p><p> - 3 </p><p> - 4 </p><p> - 5 </p><p> - 6 </p><p> - 7 </p><p> - 8 </p><p> - 9 </p><p> - 10 </p><p> - 11 </p><p> - 12 </p><p> - 13 </p><p> - 14 </p><p> - 15 </p><p> - 16 </p><p> - 17 </p><p> - 18 </p><p> - X </p><p> - Y </p><a href="/">Main page</a></body></html>
 
-* TEST 4:
+* TEST 5:
 
 * Input:
 http://localhost:8080/karyotype?specie=human
@@ -208,7 +208,7 @@ http://localhost:8080/karyotype?specie=human
 <body style="background-color: #D4E6F1;">
 <h2> Information about the karyotype of a specie</h2><p>The names of the chromosomes are: </p><p> - 1 </p><p> - 2 </p><p> - 3 </p><p> - 4 </p><p> - 5 </p><p> - 6 </p><p> - 7 </p><p> - 8 </p><p> - 9 </p><p> - 10 </p><p> - 11 </p><p> - 12 </p><p> - 13 </p><p> - 14 </p><p> - 15 </p><p> - 16 </p><p> - 17 </p><p> - 18 </p><p> - 19 </p><p> - 20 </p><p> - 21 </p><p> - 22 </p><p> - X </p><p> - Y </p><a href="/">Main page</a></body></html>
 
----> Chromosome Length
+---> chromosomeLength ENDPOINT
 
 * TEST 1:
 

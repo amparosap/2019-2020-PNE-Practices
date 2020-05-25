@@ -140,7 +140,7 @@ http://localhost:8080/listSpecies?limit=10
 </body>
 </html>
 
----> Gene Sequence
+---> geneSeq ENDPOINT
 
 * TEST 1:
 
@@ -204,7 +204,7 @@ http://localhost:8080/geneSeq?gene=.
 <h1>ERROR!</h1>
 <p>Not a valid gene, please try again</p><a href="/">Main page</a></body></html>
 
----> Gene Info
+---> geneInfo ENDPOINT
 
 * TEST 1:
 
@@ -267,7 +267,7 @@ http://localhost:8080/geneInfo?gene=3000
 <body style="background-color: #D4E6F1;">
 <h1> Information about the selected gene ( 3000 ): </h1><p> 1. The start point is: 8002615</p><p> 2. The end point is: 8020342</p><p> 3. The length of the gene is: 17727</p><p> 4. The Id of the gene is: ENSG00000132518</p><p> 5. The chromosome were is located this gene is: 17</p><a href="/">Main page</a></body></html>
 
----> Gene Calculations
+---> geneCalc ENDPOINT
 
 * TEST 1:
 
@@ -331,7 +331,7 @@ http://localhost:8080/geneCalc?gene=
 <h1>ERROR!</h1>
 <p>Not a valid gene, please try again</p><a href="/">Main page</a></body></html>
 
----> Gene List
+---> geneList ENDPOINT
 
 * TEST 1:
 
